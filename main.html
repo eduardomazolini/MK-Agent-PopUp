@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<!--
+-->
+
+<html>
+
+<head>
+<title></title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
+<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+<script>
+
+function AbrePessoa(codpessoa){
+	var values=new Object();values.parentWindow=window
+	window.showModalDialog("http://192.168.200.143:8080/mk/form.jsp?sys=MK0&action=openform&formID=8&align=0&mode=-1&goto=-1&filter=codpessoa="+codpessoa+"&scrolling=no",values,'DialogWidth: 1017; DialogHeight:678')
+}
+function AbreOS(codpessoa){
+	var values=new Object();values.parentWindow=window
+	window.showModalDialog("http://192.168.200.143:8080/mk/form.jsp?sys=MK0&action=openform&formID=55&align=0&mode=-1&goto=-1&filter=cliente="+codpessoa+"&scrolling=no",values,'DialogWidth: 717; DialogHeight:661')
+}
+
+function AbreConexao(codpessoa){
+	var values=new Object();values.parentWindow=window
+	window.showModalDialog("http://192.168.200.143:8080/mk/form.jsp?sys=MK0&action=openform&formID=17&align=0&mode=-1&goto=-1&filter=cliente="+codpessoa+"&scrolling=no",values,'DialogWidth: 1017; DialogHeight:678')
+}
+
+function AbreContrato(codpessoa){
+	var values=new Object();values.parentWindow=window
+	window.showModalDialog("http://192.168.200.143:8080/mk/form.jsp?sys=MK0&action=openform&formID=24&align=0&mode=-1&goto=-1&filter=cliente="+codpessoa+"&scrolling=no",values,'DialogWidth: 1017; DialogHeight:678')
+}
+
+function Liquidacoes(codpessoa){
+	var values=new Object();values.parentWindow=window
+	window.showModalDialog("http://192.168.200.143:8080/mk/form.jsp?sys=MK0&action=openform&formID=464567590&align=0&mode=-1&goto=-1&filter=&scrolling=no",values,'DialogWidth: 717; DialogHeight:661')
+}
+
+function getParameterByName(name) {
+    name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+    return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+}
+
+var xmlhttp;
+xmlhttp=new XMLHttpRequest();
+xmlhttp.onreadystatechange=function()
+{
+ if (xmlhttp.readyState==4 && xmlhttp.status==200)
+ {
+	 doc=xmlhttp.responseXML.children[0].children[0]
+	 htmltabela = '<table border=1 cellspacing=0 cellpadding=2><tbody>'
+	 htmllinha = ''
+	 htmlprincipal = ''
+	 
+	 for (campo = 0; campo < doc.children[0].children.length;++campo) {
+	  htmllinha+='<th>'+doc.children[0].children[campo].tagName+'</th>'
+	 }
+
+	 htmltabela +='<tr>' + htmllinha + '<tr>'
+	 htmllinha = ''
+
+	 for (linha = 0; linha < doc.children.length; ++linha) {
+	  for (campo = 0; campo < doc.children[linha].children.length;++campo) {
+	    
+		htmllinha+='<td>'+doc.children[linha].children[campo].textContent+'</td>'
+	  } //Preenche cabeçalho
+	  htmltabela +='<tr>' + htmllinha + '<tr>'
+	  htmllinha = ''
+	  htmlprincipal += '<p>Cliente: '+doc.getElementsByTagName("nome_razaosocial")[linha].textContent+' <p><button onclick="AbrePessoa('+doc.getElementsByTagName("codpessoa")[linha].textContent+')">Cadastro</button></p>'
+	  htmlprincipal += '<p>IP Cliente: '+'<font color='+(doc.getElementsByTagName("teste_ip_mc")[linha].textContent=='ok' ? '"blue"' : '"red"')+'>'+ doc.getElementsByTagName("numero_ip")[linha].textContent + ' '+ doc.getElementsByTagName("username")[linha].textContent + '</font></p>'
+	  htmlprincipal += '<p>IP Acesso: '+'<font color='+(doc.getElementsByTagName("teste_ip_mpa")[linha].textContent=='ok' ? '"blue"' : '"red"')+'>'+ doc.getElementsByTagName("nas_address")[linha].textContent+' '+ doc.getElementsByTagName("ssid")[linha].textContent + '</font></p>'
+	  htmlprincipal += '<p>IP Servidor: '+'<font color='+(doc.getElementsByTagName("teste_ip_ms")[linha].textContent=='ok' ? '"blue"' : '"red"')+'>'+ doc.getElementsByTagName("ip_comunicacao")[linha].textContent+' '+ doc.getElementsByTagName("descricao_servidor")[linha].textContent + '</font></p>'
+	  htmlprincipal += '<p>Nome Plano: '+doc.getElementsByTagName("plano")[linha].textContent+'</p>'
+	  htmlprincipal += (doc.getElementsByTagName("conexao_bloqueada")[linha].textContent=='S' ? '<font color=red>'+ doc.getElementsByTagName("mod_bloqueio")[linha].textContent +'</font></p>' : '')
+	  htmlprincipal += '<p><button onclick="AbreOS('+doc.getElementsByTagName("codpessoa")[linha].textContent+')">Gerenciador de O.S.</button>'
+	  htmlprincipal += '<button onclick="Liquidacoes('+doc.getElementsByTagName("codpessoa")[linha].textContent+')">Liquida&#231;&#227;o</button>'
+	  htmlprincipal += '<button onclick="AbreContrato('+doc.getElementsByTagName("codpessoa")[linha].textContent+')">Contrato</button></p>'
+	  htmlprincipal += '<button onclick="AbreConexao('+doc.getElementsByTagName("codpessoa")[linha].textContent+')">Conex&#227;o</button></p>'
+	 }
+	 htmltabela +='</tbody></table>'
+	 htmlCTIControle=''
+	 htmlCTIControle += 'Ramal: '+ getParameterByName('ramal')
+	 htmlCTIControle += ' TEL: '+xmlhttp.responseXML.getElementsByTagName("controle")[0].getElementsByTagName("tel")[0].textContent
+	 htmlCTIControle += ' Contrato: '+xmlhttp.responseXML.getElementsByTagName("controle")[0].getElementsByTagName("contrato")[0].textContent
+	 htmlCTIControle += ' Update: '+xmlhttp.responseXML.getElementsByTagName("controle")[0].getElementsByTagName("data_hora")[0].textContent
+	 htmlCTIControle += '<button onclick="Diag()">Mensagem</button>'
+	 	 document.getElementById("divCTIControle").innerHTML = '<p>'+htmlCTIControle+'</p>'
+	 document.getElementById("divCTI").innerHTML = htmlprincipal + htmltabela
+	 
+
+  
+ }
+}
+
+function Diag()
+{
+	document.getElementById("diag").innerHTML = '<div id="dialog" title="Liga&#231;&#227;o	"><p>'+htmlprincipal+'</p></div>';
+	$( "#dialog" ).dialog()
+}
+
+$(document).ready(function() {
+	xmlhttp.open("GET",getParameterByName('ramal')+".xml",true);xmlhttp.send()
+	setInterval(function(){xmlhttp.open("GET",getParameterByName('ramal')+".xml?t=" + (new Date()).getTime(),true);xmlhttp.send()},3000);
+});
+</script>
+</head>
+<body onload="myFunction()">
+	
+		<div id="divCTIControle"></div>
+		<div id="divCTI"><h2>Aguardando...</h2></div>
+		<div id="diag"></div>
+
+</body>
+</html>
